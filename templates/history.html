@@ -1,0 +1,79 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="card shadow-sm border-0">
+    <div class="card-body p-4">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h3 class="fw-bold text-dark"><i class="fas fa-history me-2"></i>Historial de Ventas</h3>
+            <div class="d-flex gap-2">
+                <input type="date" id="filterDate" class="form-control" onchange="loadHistory()">
+                <input type="text" id="filterSearch" class="form-control" placeholder="Buscar producto..."
+                    onkeyup="loadHistory()">
+            </div>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table table-hover align-middle">
+                <thead class="bg-light text-muted">
+                    <tr>
+                        <th>Fecha y Hora</th>
+                        <th>Producto (Variante)</th>
+                        <th>Método Pago</th>
+                        <th>Cantidad</th>
+                        <th>Precio Venta</th>
+                        <th>Total Venta</th>
+                        <th>Ganancia</th>
+                    </tr>
+                </thead>
+                <tbody id="historyTable">
+                    <!-- Loaded via JS -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', loadHistory);
+
+    async function loadHistory() {
+        const date = document.getElementById('filterDate').value;
+        const search = document.getElementById('filterSearch').value;
+
+        try {
+            const res = await axios.get('/api/history', { params: { date, search } });
+            const data = res.data;
+            const tbody = document.getElementById('historyTable');
+            tbody.innerHTML = '';
+
+            if (data.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="7" class="text-center py-5 text-muted">No se encontraron registros.</td></tr>';
+                return;
+            }
+
+            data.forEach(item => {
+                const profitClass = item.ganancia >= 0 ? 'text-success' : 'text-danger';
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td class="small text-muted">${item.fecha}</td>
+                    <td>
+                        <div class="fw-bold">${item.producto}</div>
+                        <div class="small text-muted">${item.variante}</div>
+                    </td>
+                    <td><span class="badge bg-secondary bg-opacity-10 text-secondary border">${item.metodo}</span></td>
+                    <td class="text-center">${item.cantidad}</td>
+                    <td>S/ ${item.precio_unitario.toFixed(2)}</td>
+                    <td class="fw-bold">S/ ${item.total_venta.toFixed(2)}</td>
+                    <td class="fw-bold ${profitClass}">S/ ${item.ganancia.toFixed(2)}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        } catch (error) {
+            console.error(error);
+        }
+    }
+</script>
+{% endblock %}
