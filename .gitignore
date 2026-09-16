@@ -1,0 +1,30 @@
+# Entornos virtuales
+.venv/
+venv/
+env/
+
+# Python
+__pycache__/
+*.py[cod]
+*.so
+*.egg-info/
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Base de datos local: son los datos reales del negocio, no van al repositorio
+instance/
+*.db
+*.sqlite
+*.sqlite3
+
+# Secretos y configuración de entorno
+.env
+.env.local
+
+# Editores y sistema operativo
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+desktop.ini
