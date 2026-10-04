@@ -25,9 +25,15 @@ python -m venv .venv
 source .venv/bin/activate          # Windows: .venv\Scripts\activate
 pip install -r requirements.txt
 
-cp .env.example .env               # ajustar si hace falta
+export SECRET_KEY="$(python -c 'import secrets; print(secrets.token_urlsafe(48))')"
 python run.py
 ```
+
+En PowerShell, antes de `python run.py`, definir una clave local con
+`$env:SECRET_KEY = python -c "import secrets; print(secrets.token_urlsafe(48))"`.
+En producción, guardarla de forma persistente en la configuración privada del
+servicio. `.env.example` documenta las variables; `python run.py` no carga
+archivos `.env` automáticamente.
 
 La aplicación queda en `http://localhost:5000`. El primer arranque crea la base
 de datos y siembra las categorías y orígenes iniciales.
@@ -98,7 +104,7 @@ y todos los endpoints la comparten.
 pytest
 ```
 
-45 pruebas cubren la conversión de unidades, el descuento de stock, el alta y
+Las pruebas cubren la conversión de unidades, el descuento de stock, el alta y
 reposición de mercadería, los catálogos, el historial y las métricas del panel.
 Corren sobre SQLite en memoria: no tocan la base de datos real.
 
@@ -117,12 +123,12 @@ debe apuntar a `gunicorn wsgi:app`.
 
 | Variable | Descripción | Valor por defecto |
 |---|---|---|
-| `SECRET_KEY` | Clave de sesión de Flask. Obligatoria en producción | clave de desarrollo |
+| `SECRET_KEY` | Clave aleatoria de sesión, mínimo 32 caracteres. Obligatoria fuera de pruebas | ninguno |
 | `FLASK_ENV` | `development`, `testing` o `production` | `development` |
 | `DATABASE_URL` | Cadena de conexión | `sqlite:///marketflow.db` |
 
 La base de datos vive en `instance/` y **no se versiona**: contiene los datos
-reales del negocio.
+reales del negocio. Los archivos `.env` y sus variantes locales también se excluyen; solo se versiona `.env.example` sin valores privados.
 
 ## Deuda técnica conocida
 

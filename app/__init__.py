@@ -9,8 +9,9 @@ tenga efectos secundarios.
 import os
 
 from flask import Flask
+from werkzeug.utils import import_string
 
-from app.config import CONFIGS
+from app.config import CONFIGS, Config
 from app.extensions import db
 
 
@@ -36,8 +37,10 @@ def _resolver_config(config):
     """Traduce el argumento recibido a un objeto de configuración."""
     if config is None:
         config = os.environ.get("FLASK_ENV", "development")
-    if isinstance(config, str) and config in CONFIGS:
-        return CONFIGS[config]
+    if isinstance(config, str):
+        config = CONFIGS[config] if config in CONFIGS else import_string(config)
+    if isinstance(config, type) and issubclass(config, Config):
+        return config()
     return config
 
 

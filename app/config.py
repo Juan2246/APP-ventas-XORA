@@ -6,13 +6,21 @@ sola línea de lógica. Ningún secreto se escribe aquí: se leen del entorno.
 """
 
 import os
+import secrets
 
 
 class Config:
     """Valores comunes a todos los entornos."""
 
-    SECRET_KEY = os.environ.get("SECRET_KEY", "clave-de-desarrollo-no-usar-en-produccion")
-    SQLALCHEMY_DATABASE_URI = os.environ.get("DATABASE_URL", "sqlite:///marketflow.db")
+    def __init__(self):
+        clave = os.environ.get("SECRET_KEY", "").strip()
+        if len(clave) < 32 or clave.startswith(("clave-de-desarrollo", "cambia")):
+            raise RuntimeError(
+                "SECRET_KEY debe definirse con un valor aleatorio de al menos 32 caracteres."
+            )
+        self.SECRET_KEY = clave
+        self.SQLALCHEMY_DATABASE_URI = os.environ.get("DATABASE_URL", "sqlite:///marketflow.db")
+
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
     # Unidades de venta de los productos de cigarrería
@@ -26,18 +34,14 @@ class DevelopmentConfig(Config):
 
 class TestingConfig(Config):
     TESTING = True
-    SQLALCHEMY_DATABASE_URI = "sqlite:///:memory:"
+    def __init__(self):
+        # Las pruebas nunca usan claves ni bases del entorno real.
+        self.SECRET_KEY = secrets.token_urlsafe(48)
+        self.SQLALCHEMY_DATABASE_URI = "sqlite:///:memory:"
 
 
 class ProductionConfig(Config):
     DEBUG = False
-
-    def __init__(self):
-        if os.environ.get("SECRET_KEY") is None:
-            raise RuntimeError(
-                "SECRET_KEY no está definida. En producción debe proporcionarse "
-                "por variable de entorno."
-            )
 
 
 CONFIGS = {
