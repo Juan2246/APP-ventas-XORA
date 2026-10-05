@@ -17,10 +17,14 @@ instance/
 *.db
 *.sqlite
 *.sqlite3
+*.sqlite*-journal
+*.db-wal
+*.db-shm
 
 # Secretos y configuración de entorno
 .env
-.env.local
+.env.*
+!.env.example
 
 # Editores y sistema operativo
 .vscode/
