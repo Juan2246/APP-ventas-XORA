@@ -1,10 +1,22 @@
-# XoraMarket
+<img src="docs/brand.svg" width="76" height="76" alt="Símbolo de Brío">
 
-Sistema de gestión de inventario y ventas, desarrollado por iniciativa propia
-para digitalizar un negocio familiar que llevaba su información en facturas
-físicas.
+# Brío · ventas e inventario
 
-**Stack:** Python · Flask · SQLAlchemy · SQLite · Jinja2 · Bootstrap
+Hice esta aplicación para el negocio de mi familia, donde las ventas y el inventario se llevaban en facturas de papel. El reto estaba en el detalle: un mismo producto se vende por caja, por plancha o por cajetilla, y las existencias tienen que cuadrar en los tres casos.
+
+Brío reúne el punto de venta, las reposiciones y los reportes en una aplicación local. El código conserva el nombre `APP-ventas-XORA`; en versiones y capturas anteriores aparece como XoraMarket.
+
+**Python · Flask · SQLAlchemy · SQLite · Jinja2 · Bootstrap**
+
+[Ver el caso en mi portafolio](https://portafolio-juan-torres-puce.vercel.app/proyectos/xoramarket)
+
+### La decisión principal
+
+Guardo el stock en una sola unidad base. Las cajas y planchas se convierten al registrar cada operación. Esa regla vive en `app/servicios/unidades.py`, compartida por las rutas que usan inventario.
+
+### Estado
+
+Uso local. Todavía no tiene autenticación de usuarios: no debe exponerse directamente a internet. La configuración de servidor incluida es un punto de partida para desarrollo, no una garantía de despliegue seguro.
 
 ## Funcionalidades
 
@@ -108,7 +120,9 @@ Las pruebas cubren la conversión de unidades, el descuento de stock, el alta y
 reposición de mercadería, los catálogos, el historial y las métricas del panel.
 Corren sobre SQLite en memoria: no tocan la base de datos real.
 
-## Despliegue
+## Configuración de servidor
+
+Antes de un despliegue público hacen falta autenticación y una revisión de seguridad. Estos comandos describen cómo iniciar el proceso, no resuelven ese límite.
 
 En producción se sirve con gunicorn a través de `wsgi.py`:
 
