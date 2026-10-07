@@ -84,7 +84,10 @@ pantalla no implica volver a un archivo compartido por todo el sistema.
 │   │   ├── catalogos.py     Categorías y orígenes
 │   │   ├── historial.py     Historial de ventas
 │   │   └── reportes.py      Métricas del panel
-│   └── templates/
+│   ├── templates/           Plantillas Jinja: solo estructura HTML
+│   └── static/
+│       ├── css/             Estilos globales (base.css) y de cada pantalla
+│       └── js/              Lógica de cada pantalla (billing, inventory, history, reports)
 ├── scripts/
 │   ├── audit_db.py          Utilidades de mantenimiento de la base
 │   ├── clean_db.py
